@@ -1,5 +1,26 @@
 In Kubernetes, the scheduler is responsible for assigning pods to nodes in the cluster based on various criteria. Sometimes, you might encounter situations where pods are not being scheduled as expected. This can happen due to factors such as node constraints, pod requirements, or cluster configurations.
 
+
+By using KIND(Kubernets in Docker) we can create multinode cluter in very easy way.
+
+step:1 setup Docker and runit
+step:2 install kind from official documentation.
+step3: by using create command create a clutser.
+
+Commands:
+----------
+
+For creating single node kind cluster: kind create cluster --name CLUSTER_NAME
+
+For creating multi node kind cluster we need to yaml file in the git: kind create cluster --name CLUSTER_NAME --config=FILE_NAME.yaml
+
+
+if want to see all the K8S cluster our kubectl connected: kubectl config view
+
+if we want to switch to another k8s cluster: kubectl config use-context CLUSTER_NAME
+
+
+
 1. Node Selector
 
 Node Selector is a simple way to constrain pods to nodes with specific labels. It allows you to specify a set of key-value pairs that must match the node's labels for a pod to be scheduled on that node.
