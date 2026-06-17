@@ -22,6 +22,24 @@ if we want to switch to another k8s cluster: kubectl config use-context CLUSTER_
 
 
 1. Node Selector
+==================
+
+if you have node selector in .yaml file and you try to create a deployment after creating a deployment the pods in pending state.
+
+so when i describe the one of the pending Pod i seen an warning message like [Failedscheduling] [default scheduler] [o/4 nodes are available] [1 node had untolerated taint/4]
+
+means we have 4 nodes these error telling none of the node is available for scheduling the Pod.
+
+Because this Node selectore is telling schedule this Pod only in the mentioned label node.
+
+why this labels are used in pods ?
+
+for example the app which is running on the Pod need ARM processer at that with help of this [node selector] option we can schedule a Pod  on the specific node which have that selecter lable.
+
+
+we can see the Pod selector lable in Deployment.yaml file or we can edit the Pod bu using the command: kubectl edit pod Pod_id
+
+if no Node have that labele. simply we will edit the node by using the Command: [kubectl edit node NODE_NAME]   then add the lable under Labls: [node-name: Lable]
 
 Node Selector is a simple way to constrain pods to nodes with specific labels. It allows you to specify a set of key-value pairs that must match the node's labels for a pod to be scheduled on that node.
 Usage: Include a nodeSelector field in the pod's YAML definition to specify the required labels.
@@ -35,7 +53,21 @@ spec:
     disktype: ssd
 ```
 
-2. Node Affinity
+2. Node Affinity:
+------------------
+What is Node Affinity ?
+
+before to know that first learn the diff B/W the Node selector and Node Affinity ?
+
+with node selecter we are forcing the scheduler to schuede a pod on the only mentioned lable node if the labled node not available stay in pending.
+
+But when comming to the Node Affinity we have two opetions.
+1. preferred --> by using this it will tell scheduler try to schedule a pod on mentioned label node. if that labeled node is not available in the cluster you can schedule a pod on any of the node.
+
+2. required --- (it will work alomost like a Node selecter)
+
+
+
 
 Node Affinity is a more expressive way to specify rules about the placement of pods relative to nodes' labels. It allows you to specify rules that apply only if certain conditions are met.
 Usage: Define nodeAffinity rules in the pod's YAML definition, specifying required and preferred node selectors.
