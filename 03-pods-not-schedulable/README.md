@@ -88,7 +88,22 @@ spec:
             - ssd
 ```
 
-3. Taints
+3. Taints:
+----------
+By using this Taints node will go to unscheduled state means no pods will schedule on that Tainted Node.
+
+in which case The Taint will use ?
+At the time of cluster node upgradation we will use this Taint.
+For Eg we have 3 node Cluser so if you want to update node by node because of the Prod cluster.this is one way to upgrade the K8S worker nodes.
+
+if you tainted any of the node means the scheduler will understand this node is in unscheduled state.
+
+in this Taints we have 3 diff options 
+
+1. No Schedule(for cluster upgrades we will use this option)
+2. No execute(if you use this all the pods in the node will stop instently)
+3. preffered noschedule (by using the we are teeling the scheduler in the worest situation only schedule a Pod in this Node) this will use for performence issue Nodes.
+
 
 Taints are applied to nodes to repel certain pods. They allow nodes to refuse pods unless the pods have a matching toleration.
 Usage: Use kubectl taint command to apply taints to nodes. Include tolerations field in the pod's YAML definition to tolerate specific taints.
@@ -109,7 +124,22 @@ spec:
       effect: NoSchedule
 ```
 
-4. Tolerations
+4. Tolerations:
+   -------------
+
+Tolerations means exception.
+
+in which case we have to use this ?
+
+in our organization we have few Pods to run at any cost because of they are Prod related pods.in that case if we set the Tolance to that Pods it will run even in the Tainted Nodes.
+
+at the time of tainted the node we will Provide Key=value:Noseheduler.
+
+these key=values if we use in the Pod Tolerations block.
+
+if all the nodes are tainted but this pod will schedule in the matched key=value tainted nodes
+
+
 
 Tolerations are applied to pods and allow them to schedule onto nodes with matching taints. They override the effect of taints.
 
