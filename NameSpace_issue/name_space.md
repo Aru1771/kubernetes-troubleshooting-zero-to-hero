@@ -40,6 +40,43 @@ we have to add this resource limits at the Pod level.
 
 Blast radius was come from name space level to pod level by impementing resource limits in pod.
 
+so pod was gone to creashloop backoff state and when i describe it i have seen OOM kill 
+
+Challenge 2: OOM Killed issues with Pod:
+-----------------------------------------
+
+Even after giveing the bench mark resource to the pod still it killed by OOM event.
+
+i went to that Java Pod and get the thread dump and heap dump.
+
+for getting thread dump command: kill -3
+for getting heap dump command: jstack
+
+and share these dumps to development teams.
+
+so they will understand which part of this micro service leaking the memory.
+
+
+Challenge 3: Upgrades
+-----------------------
+
+
+For EKS or other k8s clutser upgrades we have create one manual with a detail steps.
+
+1. taking a backupo
+2. reading a release notes of the new version add the points to manual
+3. control plane-->ETCD, API, Scheduler
+4. data plane--> we are using nodes as a data plane so we taint a node and drain it and make the node unschedulable and upgrade the -->KUBECTL and other objects in that node. post upgrade we will remove all taints from that node.
+
+
+
+
+
+
+
+
+
+
 
 
 
