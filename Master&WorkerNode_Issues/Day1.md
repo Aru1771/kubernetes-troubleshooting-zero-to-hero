@@ -477,3 +477,25 @@ Don't immediately start with VPC Flow Logs. Go layer by layer:
        v
     Pod
 
+
+"Since the application, Service, endpoints, and ALB are healthy, I'll isolate the network path by checking the ALB-to-backend connectivity, Security Groups, NACLs, route tables, and finally VPC Flow Logs to determine whether traffic is being rejected."
+
+
+# still facing the issue and thers is no issue with the network
+
+* Then Check Ingress / Gateway configuration
+
+         kubectl logs -n ingress-nginx <ingress-controller-pod>
+ 
+If using Istio Gateway + VirtualService:
+
+        kubectl get gateway -n production
+        kubectl get virtualservice -n production
+        
+        kubectl describe gateway <gateway-name> -n production
+        kubectl describe virtualservice <vs-name> -n production
+
+
+Your troubleshooting flow is becoming:
+
+        User → Route53 → ALB → Ingress/Gateway → Service → Endpoint → Pod → Application
