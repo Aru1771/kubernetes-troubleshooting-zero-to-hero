@@ -14,6 +14,8 @@ Your first troubleshooting commands
 
 Read the below things and at last check the challenges
 
+"I will troubleshoot from the traffic path. First I verify cluster and node health, then Pod health, Service configuration and endpoints. After that I check the Ingress/Gateway routing configuration, ALB listener and target group. If the Kubernetes and ALB layers look healthy, I investigate AWS VPC networking such as security groups, NACLs, routes and VPC Flow Logs. Finally, I validate the application-level response."
+
 
 1 . if you seen Node was in Not Ready state ?
 
