@@ -181,3 +181,93 @@ I can restore the missing file from a healthy node after verifying that the file
 I would preserve the correct permissions, restart kubelet if required, and verify that the node returns to Ready. Otherwise, 
 I would restore it through configuration management or  rebuild the node."
 
+
+Lesson 2: Container Runtime Troubleshooting.
+--------------------------------------------
+
+Step 1 — Review the production incident
+
+Your Kubernetes worker node is having problems. You check the container runtime:
+
+        sudo systemctl status containerd
+
+Output:
+
+        Active: failed (Result: exit-code)
+
+
+Then you check its logs:
+
+        sudo journalctl -u containerd -n 100 --no-pager
+
+Error: no space left on device
+
+
+This means the container runtime cannot complete an operation because a required filesystem resource may be exhausted.
+Possible causes include:
+
+        - Disk space is full.
+        - Inodes are exhausted.
+        - A specific filesystem or directory has reached its limit.
+Don't restart containerd yet. First, identify the actual cause.
+
+
+Command 1: df -h
+
+        Filesystem	Size	Used	Available	Use%
+        /dev/root	100G	45G	55G	45%
+        /dev/data	20G	20G	0G	100%
+
+Command 2: df -i
+
+        Filesystem	Inodes used	Inodes free	Use%
+        /dev/root	40K	6M	1%
+        /dev/data	2M	0	100%
+
+Notice that the root filesystem has free space, but /dev/data is completely full and has no free inodes.
+
+First, identify where /dev/data is mounted:
+
+df -h
+
+
+        Example:
+        Filesystem     Size  Used Avail Use% Mounted on
+        /dev/root      100G   45G   55G  45% /
+        /dev/data       20G   20G     0 100% /var/lib/containerd
+
+
+Here, /dev/data is mounted at /var/lib/containerd, which stores containerd's data in this example.
+
+Check directory sizes
+
+        sudo du -xhd1 /var/lib/containerd
+
+
+This shows the sizes of directories one level below that path on the same filesystem. The exact du options can vary slightly by operating system.
+Example output:
+
+        12G  /var/lib/containerd/io.containerd.content.v1.content
+        6G   /var/lib/containerd/io.containerd.snapshotter.v1.overlayfs
+        2G   /var/lib/containerd/tmp
+        20G  /var/lib/containerd
+
+Now we have evidence about where disk usage is concentrated.
+
+Important: Container images and snapshots may be in use by running workloads. Don't manually delete files from containerd's internal directories.
+
+
+Step 5 — What if disk space is fine, but inodes are full?
+
+Remember the difference:
+
+Command	What it checks
+
+        df -h	Disk capacity in bytes
+        df -i	Inode availability
+        du -sh DIRECTORY	Disk space consumed by a directory
+
+find DIRECTORY -xdev -type f \| wc -l	Number of files found on that filesystem
+
+If inodes are exhausted, even tiny files can prevent new files from being created. In that case, find directories containing unusually large numbers of files before deciding what to clean.
+
